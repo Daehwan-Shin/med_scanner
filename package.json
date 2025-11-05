@@ -1,8 +1,8 @@
 {
-  "name": "replit-kpic-app",
+  "name": "replit-kpic-app-easydrug",
   "version": "1.0.0",
   "private": true,
-  "description": "KPIC Drug Finder (MCP wrapper) for Replit",
+  "description": "MFDS e약은요 Drug Finder for Replit",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

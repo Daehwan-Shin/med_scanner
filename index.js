@@ -3,10 +3,7 @@ const express = require("express");
 const path = require("path");
 const cors = require("cors");
 
-// ✅ MCP 프로젝트의 dist/kpic-api.js를 이 리포의 kpic-api.js로 복사해 오세요.
-//    최소한 아래 두 함수를 export 해야 합니다.
-//    * searchDrugsByName(drugname: string): Promise<Array>
-//    * getDrugDetailById(drugcode: string): Promise<Object>
+// ✅ 이제 kpic-api.js는 MFDS(식약처) e약은요 OpenAPI를 호출합니다.
 const { searchDrugsByName, getDrugDetailById } = require("./kpic-api");
 
 const app = express();
@@ -15,7 +12,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, name: "replit-kpic-app" });
+  res.json({ ok: true, name: "replit-kpic-app (e약은요)" });
 });
 
 app.get("/api/search", async (req, res) => {

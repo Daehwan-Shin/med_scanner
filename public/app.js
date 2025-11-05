@@ -4,8 +4,6 @@ const detailEl = $("#detail");
 const qEl = $("#q");
 const btnSearch = $("#btnSearch");
 
-// ===== 유틸 =====
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const escapeHTML = (s) =>
   String(s ?? "")
     .replaceAll("&", "&amp;")
@@ -15,17 +13,12 @@ const escapeHTML = (s) =>
 function stringifyMaybe(v) {
   if (v == null) return "-";
   if (typeof v === "string") return v;
-  try {
-    return JSON.stringify(v, null, 2);
-  } catch {
-    return String(v);
-  }
+  try { return JSON.stringify(v, null, 2); } catch { return String(v); }
 }
 
-// ===== 상태 =====
 let lastQuery = "";
 let results = [];
-let activeIndex = -1; // 키보드 내비게이션용
+let activeIndex = -1;
 
 // ===== 검색 =====
 async function search(name) {
@@ -51,11 +44,11 @@ async function search(name) {
       return;
     }
 
-    // 최상위 항목을 자동으로 상세 표시
+    // 최상위 항목 자동 상세
     activeIndex = 0;
     highlightActive();
     const first = results[0];
-    const code = first?.drugcode || first?.itemSeq || first?.code;
+    const code = first?.itemSeq || first?.drugcode || first?.code;
     if (code) await loadDetail(code);
     else detailEl.innerHTML = `<div class="card muted">상세 코드가 없는 항목입니다.</div>`;
   } catch (e) {
@@ -66,9 +59,9 @@ async function search(name) {
 function renderResults(items) {
   resultsEl.innerHTML = (items || [])
     .map((it, idx) => {
-      const name = it?.drugname || it?.itemName || it?.name || "이름 없음";
-      const code = it?.drugcode || it?.itemSeq || it?.code || "";
-      const etc = it?.company || it?.entpName || "";
+      const name = it?.itemName || it?.drugname || it?.name || "이름 없음";
+      const code = it?.itemSeq || it?.drugcode || it?.code || "";
+      const etc = it?.entpName || it?.company || "";
       return `
         <button
           class="list-item"
@@ -123,15 +116,18 @@ async function loadDetail(code) {
 }
 
 function renderDetail(d) {
-  // 필드 맵핑(실제 KPIC 응답 키에 맞게 필요한 것만 교체하세요)
-  const name = d.itemName || d.drugname || d.name || "이름 없음";
-  const code = d.itemSeq || d.drugcode || d.code || "-";
-  const comp = d.entpName || d.company || "-";
-  const classNo = d.classNo || d.classification || "-";
-  const form = d.dosageForm || d.form || "-";
-  const ing = d.mainIngr || d.ingredient || d.components || "-";
-  const add = d.additives || d.excipients || "-";
-  const warn = d.warnings || d.cautions || "-";
+  const name = d.itemName || "이름 없음";
+  const code = d.itemSeq || "-";
+  const comp = d.entpName || "-";
+  const classNo = d.classNo || "-";
+  const form = d.dosageForm || d.drugShape || "-";
+
+  const efcy = d.efcyQesitm || "-";
+  const useMethod = d.useMethodQesitm || "-";
+  const atpn = d.atpnQesitm || "-";
+  const intrc = d.intrcQesitm || "-";
+  const se = d.seQesitm || "-";
+  const deposit = d.depositMethodQesitm || "-";
 
   detailEl.innerHTML = `
     <div class="card">
@@ -140,15 +136,21 @@ function renderDetail(d) {
         <div><span>품목기준코드</span><code>${escapeHTML(code)}</code></div>
         <div><span>업체명</span>${escapeHTML(comp)}</div>
         <div><span>분류</span>${escapeHTML(classNo)}</div>
-        <div><span>제형</span>${escapeHTML(form)}</div>
+        <div><span>제형/외형</span>${escapeHTML(form)}</div>
       </div>
       <hr/>
-      <h3>주성분</h3>
-      <pre class="scroll">${escapeHTML(stringifyMaybe(ing))}</pre>
-      <h3>첨가제</h3>
-      <pre class="scroll">${escapeHTML(stringifyMaybe(add))}</pre>
-      <h3>주의/경고</h3>
-      <pre class="scroll">${escapeHTML(stringifyMaybe(warn))}</pre>
+      <h3>효능·효과</h3>
+      <pre class="scroll">${escapeHTML(String(efcy))}</pre>
+      <h3>용법·용량</h3>
+      <pre class="scroll">${escapeHTML(String(useMethod))}</pre>
+      <h3>주의사항</h3>
+      <pre class="scroll">${escapeHTML(String(atpn))}</pre>
+      <h3>상호작용</h3>
+      <pre class="scroll">${escapeHTML(String(intrc))}</pre>
+      <h3>부작용</h3>
+      <pre class="scroll">${escapeHTML(String(se))}</pre>
+      <h3>보관방법</h3>
+      <pre class="scroll">${escapeHTML(String(deposit))}</pre>
     </div>
   `;
 }
@@ -186,7 +188,7 @@ qEl.addEventListener("keydown", (e) => {
   } else if (e.key === "Enter") {
     if (activeIndex >= 0 && activeIndex < results.length) {
       const r = results[activeIndex];
-      const code = r?.drugcode || r?.itemSeq || r?.code;
+      const code = r?.itemSeq || r?.drugcode || r?.code;
       if (code) loadDetail(code);
     } else {
       search();
@@ -194,5 +196,4 @@ qEl.addEventListener("keydown", (e) => {
   }
 });
 
-// 첫 포커스
 qEl.focus();

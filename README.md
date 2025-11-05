@@ -1,44 +1,28 @@
-# replit-kpic-app — KPIC Drug Finder (MCP wrapper)
+# e약은요 Drug Finder (MFDS OpenAPI)
 
-MCP 서버에서 사용하던 **KPIC 클라이언트 코드(dist/kpic-api.js)**를 이 리포의 `kpic-api.js`로 복사해, 웹 UI에서 **약 이름 검색 → 최상위 항목 상세 자동 표시**까지 바로 확인할 수 있습니다.
+식품의약품안전처 **e약은요(의약품개요정보)** OpenAPI를 사용하여
+약 이름 검색 → **최상위 항목 자동 상세 표시**까지 제공하는 Replit용 앱입니다.
 
-## 빠른 시작
+## 필요 환경변수 (Replit Secrets)
+- `MFDS_SERVICE_KEY` : 공공데이터포털에서 발급받은 서비스키
+- (선택) `MFDS_EASYDRUG_URL` : 기본값은 `http://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList`
+
+## 실행
 ```bash
 npm i
 npm start
 # http://localhost:3000
 ```
 
-> Replit에서는 **Import from GitHub → Run**만으로 동작합니다.
+## API 엔드포인트
+- `GET /api/search?name=아스피린` → e약은요 리스트 호출(itemName), 결과 배열 반환
+- `GET /api/detail/:itemSeq` → 같은 서비스에 `itemSeq`로 상세 정보 조회
 
-## 폴더 구조
-```
-index.js            # Express 서버(API + 정적 파일)
-kpic-api.js         # MCP dist/kpic-api.js 복사 또는 동일 인터페이스 구현
-public/
-  ├── index.html    # 검색 UI
-  ├── app.js        # 검색/상세 로직(최상위 자동 상세)
-  └── styles.css
-```
+## 프런트 표시 필드
+- 결과 리스트: `itemName`, `itemSeq`, `entpName`
+- 상세 패널: `itemName`, `itemSeq`, `entpName`, `classNo`, `dosageForm/drugShape`,
+  `efcyQesitm(효능)`, `useMethodQesitm(용법)`, `atpnQesitm(주의)`, `intrcQesitm(상호작용)`, `seQesitm(부작용)`, `depositMethodQesitm(보관)`
 
-## kpic-api.js 교체
-- MCP 리포의 `dist/kpic-api.js`를 그대로 복사해 오고, 아래 export를 보장하세요:
-  ```js
-  module.exports = { searchDrugsByName, getDrugDetailById };
-  ```
-- 또는 현재 파일에 실제 KPIC 엔드포인트를 기입해 동일 시그니처로 구현하세요.
-
-## API 엔드포인트 (이 리포)
-- `GET /api/search?name=아스피린` → `{ count, results: [...] }`
-- `GET /api/detail/:drugcode` → `{ detail: { ... } }`
-
-## 프론트 매핑 팁
-- 결과 목록 키: `drugname|itemName|name`, `drugcode|itemSeq|code`, `entpName|company`
-- 상세 키: `itemName|drugname|name`, `itemSeq|drugcode|code`, `entpName|company`, `classNo|classification`, `dosageForm|form`, `mainIngr|ingredient|components`, `additives|excipients`, `warnings|cautions`
-
-## 건강한 에러 처리
-- 빈 검색어는 400 응답(`name query is required`)
-- KPIC 호출 실패 시 5xx + `{ error: SEARCH_FAILED|DETAIL_FAILED, message }`
-
-## 라이선스
-MIT
+## 주의
+- 공공데이터 응답 스키마는 `response.body.items.item` 등으로 내려오며, 코드에서 안전하게 파싱하도록 작성되어 있습니다.
+- 과호출 방지를 위해 프론트는 **디바운스(350ms)** 후 검색합니다.
