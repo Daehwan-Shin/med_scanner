@@ -41,7 +41,8 @@ app.get("/api/detail/:drugcode", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`[replit-kpic-app] listening on http://localhost:${PORT}`);
+const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || "0.0.0.0";
+app.listen(PORT, HOST, () => {
+  console.log(`[replit-kpic-app] listening on http://${HOST}:${PORT}`);
 });
