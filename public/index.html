@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>KPIC Drug Finder</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>KPIC 의약품 검색</h1>
+      <div class="search-bar">
+        <input
+          id="q"
+          type="text"
+          placeholder="의약품명 (한글/영문)을 입력하면 자동으로 조회됩니다"
+          autocomplete="off"
+        />
+        <button id="btnSearch" title="검색">검색</button>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section>
+        <h2>검색 결과</h2>
+        <div id="results" class="list" role="listbox" aria-label="검색 결과 목록"></div>
+      </section>
+      <aside>
+        <h2>상세 정보</h2>
+        <div id="detail" class="card muted">검색어를 입력하세요.</div>
+      </aside>
+    </main>
+
+    <footer>
+      <div>Powered by KPIC • MCP 기반 래퍼</div>
+    </footer>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

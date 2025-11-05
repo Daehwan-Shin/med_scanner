@@ -1,0 +1,35 @@
+:root {
+  --bg: #0f1115;
+  --panel: #161925;
+  --muted: #7a8194;
+  --text: #e6e9f2;
+  --accent: #6ea8fe;
+  --error: #ff6b6b;
+  --border: #242737;
+}
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--text); background: var(--bg); font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", sans-serif; }
+header { padding: 16px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(15,17,21,0.8); backdrop-filter: blur(6px); }
+h1 { margin: 0 0 8px; font-size: 20px; }
+.search-bar { display:flex; gap:8px; }
+.search-bar input { flex:1; padding:10px 12px; border:1px solid var(--border); border-radius:10px; background:#0c0e14; color:var(--text); }
+.search-bar button { padding:10px 14px; border:1px solid var(--border); border-radius:10px; background:var(--panel); color:var(--text); cursor:pointer; }
+.search-bar button:hover { outline:1px solid var(--accent); }
+.grid { display:grid; grid-template-columns: 1.1fr 1fr; gap:16px; padding:16px; }
+section, aside { background: var(--panel); border:1px solid var(--border); border-radius:14px; padding:12px; }
+h2 { margin:0 0 8px; font-size:16px; color:#c6cbe0; }
+.list { display:flex; flex-direction:column; gap:8px; max-height: calc(100vh - 200px); overflow:auto; }
+.list-item { width:100%; text-align:left; border:1px solid var(--border); background:#0e1018; color:var(--text); border-radius:12px; padding:10px 12px; cursor:pointer; }
+.list-item:hover { outline: 1px solid var(--accent); }
+.list-item.active { outline: 2px solid var(--accent); }
+.list-item .title { font-weight:600; }
+.list-item .sub { color: var(--muted); font-size: 12px; margin-top:2px; }
+.card { background:#0e1018; border:1px solid var(--border); border-radius:12px; padding:12px; }
+.card.muted { color: var(--muted); }
+.card.error { border-color: #3b0d0d; background: #2a0d0d; color: var(--error); }
+.kv { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+.kv div { background:#10131d; border:1px solid var(--border); border-radius:10px; padding:8px; }
+.kv span { display:block; font-size:12px; color: var(--muted); }
+pre.scroll { max-height: 220px; overflow:auto; margin: 6px 0 0; background:#0b0d13; border:1px solid var(--border); padding:8px; border-radius:8px; }
+footer { padding: 10px 16px; border-top:1px solid var(--border); color: var(--muted); }
+@media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
