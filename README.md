@@ -1,58 +1,78 @@
-KPIC MFDS Drug Finder (Replit)
+# KPIC MFDS Drug Finder
 
-식품의약품안전처 공공데이터(OpenAPI)와 e약은요 데이터를 활용해
-약 이름 검색 → 목록 → 상세정보(효능·용법·주의·부작용) + 허가정보(전문·일반 포함) + DUR 정보를 제공하는 웹 앱입니다.
+식품의약품안전처 공공데이터(OpenAPI) + **e약은요** 데이터를 이용해  
+**약 이름 검색 → 목록 → 상세(효능·용법·주의·부작용) + 허가정보(전문/일반) + DUR** 를 제공하는 웹 앱입니다.
 
-런타임: Node.js 18+ (Express)
+<p align="left">
+  <img src="https://img.shields.io/badge/Node-18%2B-339933?logo=node.js&logoColor=white" />
+  <img src="https://img.shields.io/badge/Express-4.x-000000?logo=express&logoColor=white" />
+  <img src="https://img.shields.io/badge/License-MIT-blue" />
+</p>
 
-프론트엔드: 정적 HTML/JS(CSR)
+---
 
-데이터 소스
+## ✨ 기능
 
-e약은요: DrbEasyDrugInfoService
+- **검색/목록**: 약 이름으로 검색 후 후보 리스트 표시
+- **상세**: e약은요 상세(효능·용법·주의·상호작용·부작용·보관)
+- **허가정보(Rx/일반)**: MFDS 허가정보로 전문/일반, 허가번호, 제형/포장 등 확인
+- **DUR(품목)**: DUR 품목정보 서비스로 금기/주의/상호작용 요약
+- **내성 강한 네트워킹**  
+  - e약은요: `getDrbEasyDrugInfoList` / `getDrbEasyDrugInfo` / `getDrbEasyDrugList` 자동 재시도  
+  - DUR: 루트/메서드 + http/https 자동 재시도, `itemName`/`itemSeq` 파라미터 후보 시도  
+  - 허가정보: 멀티 엔드포인트 시도(콤마 구분)
 
-허가정보: DrugPrdtPrmsnInfoService07
+---
 
-DUR(품목정보): DURPrdlstInfoService03
+## 🗂 폴더 구조
 
-네트워크 내성: 서비스/메서드/프로토콜/파라미터 스마트 재시도 내장
-(예: getDrbEasyDrugInfoList/getDrbEasyDrugInfo/getDrbEasyDrugList, http/https, itemName/item_name 등)
+```
+.
+├── index.js          # Express API 서버
+├── kpic-api.js       # MFDS/e약은요/DUR 호출 + 스마트 재시도 + 파싱/정규화
+├── public/
+│   ├── index.html    # 간단한 검색 UI
+│   └── app.js       # 프론트엔드 API 연동
+├── package.json
+└── README.md
+```
 
-1) 빠른 시작
-pnpm install       # 또는 npm i
-pnpm start         # 기본 포트 3000
+---
 
+## 🚀 빠른 시작
 
-서버가 켜지면:
+```bash
+# 1) 의존성
+pnpm install        # 또는 npm i
 
-[drug-finder-mfds] listening on http://0.0.0.0:3000
+# 2) 환경변수(.env 또는 Replit/GitHub Secrets)
+# 아래 '환경변수' 섹션 참고
 
+# 3) 실행
+pnpm start          # 또는 npm run start
+# => http://localhost:3000
+```
 
-브라우저에서 열기: http://localhost:3000
+---
 
-2) 환경변수(Secrets) 설정
+## 🔐 환경변수
 
-Replit “Secrets” 또는 .env에 아래 키를 설정하세요.
+> 공공데이터포털에서 발급받은 **서비스키**가 필요합니다.  
+> 포털에서 “인코딩된 키”를 사용하면 `MFDS_KEY_IS_ENCODED=1`, 일반키면 `0`.
 
-키	설명	예시
-MFDS_SERVICE_KEY	공공데이터포털에서 발급 받은 서비스 키	발급키(원문)
-MFDS_KEY_IS_ENCODED	발급키가 인코딩키이면 1, 일반키면 0	1
-MFDS_EASYDRUG_URL	e약은요 서비스 루트 또는 메서드 URL	https://apis.data.go.kr/1471000/DrbEasyDrugInfoService
-MFDS_PERMIT_URLS	허가정보 메서드 URL(여러 개면 ,로 구분)	https://apis.data.go.kr/1471000/DrugPrdtPrmsnInfoService07/getDrugPrdtPrmsnInq07
-MFDS_DUR_URL	DUR(품목정보) 루트 또는 메서드 URL	http://apis.data.go.kr/1471000/DURPrdlstInfoService03/getDurPrdlstInfoList3
-MFDS_MAXDOSE_URL	(옵션) 성분별 1일 최대투여량 API 메서드 URL	.../MaxDoseInfoService/getMaxDoseList
-PORT	서버 포트	3000
+| 키 | 설명 | 예시 |
+|---|---|---|
+| `MFDS_SERVICE_KEY` | (필수) 서비스키(원문) | `발급키` |
+| `MFDS_KEY_IS_ENCODED` | 인코딩키=1, 일반키=0 | `1` |
+| `MFDS_EASYDRUG_URL` | e약은요 루트 또는 메서드 URL | `https://apis.data.go.kr/1471000/DrbEasyDrugInfoService` |
+| `MFDS_PERMIT_URLS` | **허가정보 메서드 URL**(여러 개면 콤마로 구분) | `https://apis.data.go.kr/1471000/DrugPrdtPrmsnInfoService07/getDrugPrdtPrmsnInq07` |
+| `MFDS_DUR_URL` | DUR 품목정보 루트 또는 메서드 URL | `http://apis.data.go.kr/1471000/DURPrdlstInfoService03/getDurPrdlstInfoList3` |
+| `MFDS_MAXDOSE_URL` | (선택) 1일 최대투여량 메서드 URL | `.../MaxDoseInfoService/getMaxDoseList` |
+| `PORT` | 서버 포트 | `3000` |
 
-TIP
+`.env` 예시:
 
-e약은요/DUR는 환경에 따라 http/https 지원이 달라 자동 폴백이 들어있습니다.
-
-e약은요는 getDrbEasyDrugInfoList/getDrbEasyDrugInfo/getDrbEasyDrugList를 모두 시도합니다.
-
-허가정보는 반드시 메서드까지 포함한 URL을 넣으세요.
-
-.env 예시:
-
+```env
 MFDS_SERVICE_KEY=여기에_발급키_원문
 MFDS_KEY_IS_ENCODED=1
 
@@ -61,184 +81,105 @@ MFDS_PERMIT_URLS=https://apis.data.go.kr/1471000/DrugPrdtPrmsnInfoService07/getD
 MFDS_DUR_URL=http://apis.data.go.kr/1471000/DURPrdlstInfoService03/getDurPrdlstInfoList3
 
 PORT=3000
+```
 
-3) API 엔드포인트
-3.1 헬스체크
+> 참고: 일부 환경에서 http/https 지원이 다를 수 있어 코드 측에서 자동으로 **프로토콜/메서드/파라미터 키**를 재시도합니다.
+
+---
+
+## 🔌 서버 API
+
+### 헬스체크
+```
 GET /api/health
+```
 
-
-응답: { ok: true, name: "replit-kpic-app (e약은요)" }
-
-3.2 일반 검색 (e약은요)
+### e약은요 검색
+```
 GET /api/search?name={약이름}
+```
+- 응답: `{ count, results: [{ itemName, itemSeq, entpName, ... }] }`
 
-
-예: /api/search?name=타이레놀
-
-응답:
-
-{
-  "count": 2,
-  "results": [
-    {
-      "itemName": "타이레놀정500mg",
-      "itemSeq": "200700123",
-      "entpName": "한국얀센(유)"
-    }
-  ]
-}
-
-3.3 일반 상세 (e약은요)
+### e약은요 상세
+```
 GET /api/detail/{itemSeq}
+```
+- 응답: `{ detail: { efcyQesitm, useMethodQesitm, atpnQesitm, intrcQesitm, seQesitm, ... } }`
 
+### 허가정보(Rx/일반) 검색
+```
+GET /api/rx/search?name={제품명}&spclty_pblc={전문/일반(선택)}
+```
+- 응답: `[ { itemName, entpName, code, spclty, permitNo, ... } ]`
 
-예: /api/detail/200700123
-
-응답(요약):
-
-{
-  "detail": {
-    "itemName": "타이레놀정500mg",
-    "itemSeq": "200700123",
-    "entpName": "한국얀센(유)",
-    "efcyQesitm": "이 약은 ...",
-    "useMethodQesitm": "...",
-    "atpnQesitm": "...",
-    "intrcQesitm": "...",
-    "seQesitm": "...",
-    "depositMethodQesitm": "..."
-  }
-}
-
-3.4 전문/허가 검색 (Rx)
-GET /api/rx/search?name={제품명}&spclty_pblc={전문/일반 필터}
-
-
-spclty_pblc는 선택값 (예: 전문)
-
-응답 항목:
-
-itemName, entpName, code(품목일련코드/식별값), spclty, permitNo
-
-_endpoint(성공한 허가정보 엔드포인트), _matchedBy(매칭 파라미터)
-
-3.5 전문/허가 상세 + DUR
+### 허가정보 + DUR 상세
+```
 GET /api/rx/detail/{prdlst_Stdr_code}
+```
+- 응답:  
+  - 성공(허가정보): `{ source: "PERMIT", permit, dur, maxDose }`  
+  - 폴백(e약은요): `{ source: "EASYDRUG_FALLBACK", easy }`
 
+---
 
-응답:
+## 🖥 프런트 동작(요약)
 
-{
-  "source": "PERMIT",
-  "permit": { /* 허가정보 정규화 필드들 */ },
-  "dur": [ /* DUR 요약(품목명/품목코드 기반) */ ],
-  "maxDose": [ /* (옵션) 성분별 1일 최대투여량 */ ]
-}
+- `public/index.html` + `public/app.js` (CSR)
+- 검색 → `/api/search` → 결과 목록 렌더  
+- 항목 클릭 → `/api/detail/:itemSeq` 또는 `/api/rx/detail/:code` → 상세 정보 표시  
+- “바로 상세”가 아닌 **최종 선택 후 상세** UX
 
+---
 
-허가정보 실패 시 자동으로 e약은요 상세 폴백:
+## 🧰 트러블슈팅
 
-{ "source": "EASYDRUG_FALLBACK", "easy": { /* e약은요 상세 */ } }
+- **401 Unauthorized**  
+  - 서비스키/인코딩 설정 확인 (`MFDS_KEY_IS_ENCODED=1`은 인코딩키 사용 시)
+  - Secrets 수정 후 서버 재시작
+- **404 api not found**  
+  - 허가정보: **메서드 포함** URL인지 확인  
+  - e약은요: `getDrbEasyDrugInfoList / getDrbEasyDrugInfo / getDrbEasyDrugList` 중 환경에서 열리는 메서드가 다를 수 있음(코드가 자동 재시도)
+  - 프로토콜 문제 가능 → 코드가 http/https 모두 시도
+- **500 unexpected errors**  
+  - 게이트웨이 일시 오류 또는 파라미터 미지원 조합  
+  - 콘솔의 `[MFDS] URL = ...`을 브라우저에서 직접 확인해보세요.
 
-4) 프론트엔드 동작
+> 디버깅 시 콘솔의 `[MFDS] URL = ...` 한 줄(키는 마스킹됨)을 이슈에 첨부해주시면 빠르게 원인 파악이 가능합니다.
 
-/public/index.html에서 검색창 입력 → /api/search 호출 → 결과 리스트 렌더
+---
 
-리스트 항목 클릭 → /api/detail/{itemSeq} 또는 /api/rx/detail/{code} 호출
+## 🤝 기여
 
-결과 패널에 효능·용법·주의·부작용(e약은요)와 허가정보 + DUR(있을 시)을 표시
+PR/이슈 환영합니다.  
+- 코드 스타일: 기본 Prettier/ESLint  
+- 커밋 메시지: 기능 단위로 명확하게
 
-“바로 상세”가 아닌 “검색 → 최종 항목 선택 → 상세” UX로 구현되어 있습니다.
+---
 
-5) 로그와 디버깅
+## 📄 라이선스
 
-서버 콘솔에 실제 호출 URL을 찍습니다(서비스키 마스킹):
+- 코드: **MIT License**  
+- 데이터: **식품의약품안전처/공공데이터포털 이용 약관**을 따릅니다.
 
-[MFDS] URL = https://.../DrbEasyDrugInfoService/getDrbEasyDrugList?...&itemName=...
+---
 
+## 📷 스크린샷(옵션)
 
-문제 발생 시, 이 로그 한 줄이면 원인 파악이 빠릅니다.
+> 저장소 `docs/` 아래에 캡처 이미지를 추가하세요.
+>
+> - `docs/search.png` (검색 결과)  
+> - `docs/detail.png` (상세+허가정보+DUR)  
 
-6) 자주 나오는 에러 & 해결
-401 Unauthorized
+README에서 사용하려면:
 
-MFDS_SERVICE_KEY가 잘못되었거나 인코딩 설정이 다름
+```md
+![Search](docs/search.png)
+![Detail](docs/detail.png)
+```
 
-포털에서 인코딩키를 썼다면 MFDS_KEY_IS_ENCODED=1
+---
 
-일반키면 0
+## 📩 문의
 
-Replit Secrets 저장 후 서버 재시작 필요
-
-404 api not found
-
-엔드포인트 루트만 넣고 메서드를 빼먹은 경우 (허가정보)
-
-예: .../DrugPrdtPrmsnInfoService07 (❌)
-→ .../DrugPrdtPrmsnInfoService07/getDrugPrdtPrmsnInq07 (✅)
-
-e약은요 메서드 명 변동: getDrbEasyDrugInfoList / getDrbEasyDrugInfo / getDrbEasyDrugList
-→ 우리는 3종 모두 자동 재시도
-
-http/https 정책 차이
-→ 우리는 두 프로토콜 모두 자동 재시도
-
-500 unexpected errors
-
-게이트웨이 측 일시 오류 또는 파라미터 미지원 조합
-→ 같은 엔드포인트에서 대체 파라미터 키(itemName↔item_name, itemSeq↔item_seq) 자동 재시도
-
-여전히 실패 시, 콘솔의 [MFDS] URL = ...을 브라우저에 붙여 확인
-→ 브라우저에서도 500이면 데이터포털 측 응답 이슈 (잠시 후 재시도)
-
-7) 보안/운영 팁
-
-서비스키는 절대 코드에 하드코딩하지 말고 환경변수로 주입
-
-클라이언트에서 직접 공공API를 호출하지 말고, **서버(프록시)**를 통해 호출
-
-과도한 호출 방지(디바운스/쓰로틀)와 캐시 적용 고려
-
-응답 HTML이 포함될 수 있으므로 출력 시 이스케이프 처리 권장
-
-8) 배포
-Replit
-
-이 저장소를 Import
-
-“Secrets”에 환경변수 설정
-
-Run 클릭
-
-오른쪽 Webview에서 동작 확인
-
-GitHub → Replit
-
-GitHub에 푸시 후 Replit에서 “Import from GitHub”
-
-Secrets 재설정 → Run
-
-9) 폴더 구조(요약)
-.
-├── index.js          # Express 서버
-├── kpic-api.js       # 공공API 호출/정규화/스마트 재시도 로직
-├── package.json
-├── public/
-│   ├── index.html    # 검색 UI
-│   └── app.js       # 프론트엔드 호출/렌더
-└── README.md
-
-10) 향후 확장 아이디어
-
-품목 이미지(의약품 식별) 연결
-
-ATC 코드/성분 라벨 추가
-
-처방전/연령/체중 기반 용량 계산기(MaxDose API 연동 고도화)
-
-결과 캐시/서버사이드 렌더링(SSR)
-
-11) 라이선스
-
-본 저장소의 애플리케이션 코드는 MIT 라이선스.
-공공데이터 API의 사용 조건은 식품의약품안전처/공공데이터포털 약관을 따릅니다.
+이슈 탭에 남겨주세요.  
+- 사용 중인 **최종 요청 URL 로그**(마스킹된 상태)와 함께 주시면 가장 빠르게 도움 드릴 수 있습니다.
