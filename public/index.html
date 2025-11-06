@@ -3,19 +3,18 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>e약은요 Drug Finder</title>
+    <title>Drug Finder — e약은요 + 허가정보</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <header>
-      <h1>식약처 e약은요 검색</h1>
+      <h1>의약품 검색 (e약은요 + 허가정보)</h1>
+      <div class="mode">
+        <label><input type="radio" name="mode" value="rx" checked /> 전문/허가정보</label>
+        <label><input type="radio" name="mode" value="otc" /> 일반/e약은요</label>
+      </div>
       <div class="search-bar">
-        <input
-          id="q"
-          type="text"
-          placeholder="의약품명 (한글/영문)을 입력하면 자동으로 조회됩니다"
-          autocomplete="off"
-        />
+        <input id="q" type="text" placeholder="의약품명 입력 후 ‘검색’" autocomplete="off"/>
         <button id="btnSearch" title="검색">검색</button>
       </div>
     </header>
@@ -27,14 +26,11 @@
       </section>
       <aside>
         <h2>상세 정보</h2>
-        <div id="detail" class="card muted">검색어를 입력하세요.</div>
+        <div id="detail" class="card muted">검색어를 입력한 뒤 ‘검색’을 눌러주세요.</div>
       </aside>
     </main>
 
-    <footer>
-      <div>Powered by MFDS e약은요 OpenAPI</div>
-    </footer>
-
+    <footer><div>Powered by MFDS OpenAPI</div></footer>
     <script src="/app.js"></script>
   </body>
 </html>
